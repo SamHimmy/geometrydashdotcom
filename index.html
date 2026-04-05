@@ -10,16 +10,24 @@
         canvas { display: block; margin: 0 auto; }
     </style>
   <script>
-    async function start() {
-      await navigator.serviceWorker.register('/geometrydashdotcom/test.js');
-      await navigator.serviceWorker.ready;
-      navigator.serviceWorker.controller.postMessage({ levelId: 2 });
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = './assets/index-game.js';
-      document.body.appendChild(script);
-    }
-    start();
+async function start() {
+  const reg = await navigator.serviceWorker.register('/geometrydashdotcom/test.js');
+  await navigator.serviceWorker.ready;
+  if (!navigator.serviceWorker.controller) {
+    await new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+    });
+  }
+
+  navigator.serviceWorker.controller.postMessage({ levelId: 2 });
+
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = './assets/index-game.js';
+  document.body.appendChild(script);
+}
+
+start();
   </script>
   <script>
     // ResizeObserver catches iframe size changes that window.resize misses
